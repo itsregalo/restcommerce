@@ -52,7 +52,8 @@ class StaffUser(models.Model):
     
 class MerchantUser(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    profile_pic=models.ImageField(upload_to="images/profile/merchant")
+    profile_pic=models.ImageField(upload_to="images/profile/merchant",
+                             blank=True, null=True)
     profile_pic_thumbnail = ImageSpecField(source='profile_pic',
                                            processors=[ResizeToFill(100,100)],
                                            format='JPEG',
