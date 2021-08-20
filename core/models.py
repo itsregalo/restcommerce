@@ -18,8 +18,7 @@ class Category(MPTTModel):
     title=models.CharField(max_length=255)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
     slug=models.SlugField(blank=True)
-    thumbnail = models.ImageField(upload_to="images/products/categories/")
-    description=models.TextField()
+    thumbnail = models.ImageField(upload_to="images/products/categories/", blank=True, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     is_active = models.IntegerField(default=1)
     

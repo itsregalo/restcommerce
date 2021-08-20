@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 from .views import ProductList, ProductDetail, CategoryList
 
 urlpatterns = [
@@ -10,3 +11,5 @@ urlpatterns = [
 
     path('category/', CategoryList.as_view(), name='category-list'),
     ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
