@@ -27,7 +27,7 @@ class Category(MPTTModel):
         return reverse("products:category-objects", kwargs = {'slug':self.slug})
     
     def category_objects(self):
-        return Products.objects.filter(is_approved=True, category=self)
+        return Product.objects.filter(is_approved=True, category=self)
     
     class Meta:
         verbose_name = "Category"
@@ -56,7 +56,7 @@ class Product(models.Model):
     brand=models.CharField(max_length=255)
     product_max_price=models.CharField(max_length=255)
     product_discount_price=models.CharField(max_length=255)
-    product_description=RichTextField(blank=True, null=True)
+    product_description=models.TextField(blank=True, null=True)
     product_long_description=RichTextField(blank=True, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     tags = TaggableManager()
@@ -89,9 +89,9 @@ class Product(models.Model):
 
 class ProductMedia(models.Model):
     product_id=models.ForeignKey(Product,on_delete=models.CASCADE)
-    brief_describtion = models.CharField(max_length=70)
-    media_content=models.ImageField(upload_to="images/products/product_media")
-    media_thumbnail = ImageSpecField(source='media_content',
+    description = models.CharField(max_length=70)
+    image =models.ImageField(upload_to="images/products/product_media")
+    image_thumbnail = ImageSpecField(source='image',
                                      processors=[ResizeToFill(655,800)],
                                      format='webp',
                                      options = {'quality':100})
