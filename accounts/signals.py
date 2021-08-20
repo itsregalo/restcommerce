@@ -21,7 +21,7 @@ def create_user_profile(sender,instance,created,**kwargs):
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
     if instance.is_superuser==True:
-        instance.adminuser.save()
+       instance.adminuser.save()
     if instance.is_staff==True:
         instance.staffuser.save()
     if instance.is_merchant==True:
