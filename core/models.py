@@ -44,7 +44,7 @@ class Category(MPTTModel):
     def __str__(self):
         return self.title
 
-class Products(models.Model):
+class Product(models.Model):
     slug=models.SlugField(blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     product_name=models.CharField(max_length=255)
@@ -70,7 +70,7 @@ class Products(models.Model):
         verbose_name_plural = "Products"
     
     def get_merchant_products(self):
-        return Products.objects.filter(added_by_merchant=MerchantUser)
+        return Product.objects.filter(added_by_merchant=MerchantUser)
     
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -88,7 +88,7 @@ class Products(models.Model):
 
 
 class ProductMedia(models.Model):
-    product_id=models.ForeignKey(Products,on_delete=models.CASCADE)
+    product_id=models.ForeignKey(Product,on_delete=models.CASCADE)
     brief_describtion = models.CharField(max_length=70)
     media_content=models.ImageField(upload_to="images/products/product_media")
     media_thumbnail = ImageSpecField(source='media_content',
@@ -101,7 +101,7 @@ class ProductMedia(models.Model):
 
 class OrderItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Products, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     is_ordered = models.BooleanField(default=False)
     
