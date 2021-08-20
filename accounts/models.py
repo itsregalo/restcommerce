@@ -24,7 +24,8 @@ class CustomUser(AbstractUser):
     
 class AdminUser(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    profile_pic=models.ImageField(upload_to="images/profile/admin")
+    profile_pic=models.ImageField(upload_to="images/profile/admin",
+                                    blank=True, null=True)
     profile_pic_thumbnail = ImageSpecField(source='profile_pic',
                                            processors=[ResizeToFill(100,100)],
                                            format='JPEG',
@@ -43,7 +44,8 @@ class StaffUser(models.Model):
                                            format='JPEG',
                                            options={'quality':100}
                                            )
-    position = models.CharField(choices=STAFF_CHOICES, max_length=255)
+    position = models.CharField(choices=STAFF_CHOICES, max_length=255,
+                                blank=True, null=True)
     description = models.TextField(default="No description")
     created_at = models.DateTimeField(auto_now_add=True)
     
