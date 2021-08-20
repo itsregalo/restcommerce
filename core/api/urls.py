@@ -2,6 +2,8 @@ from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 from .views import ProductList, ProductDetail, CategoryList
 
+app_name = 'api-core'
+
 urlpatterns = [
     path('products/', ProductList.as_view(), name='product-list'),
     path('product/<int:pk>/', ProductDetail.as_view(), name='product-detail'),
