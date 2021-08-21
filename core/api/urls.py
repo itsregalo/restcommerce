@@ -8,6 +8,7 @@ urlpatterns = [
     path('products/', ProductList, name='product-list'),
     path('product/<int:pk>/', ProductDetail, name='product-detail'),
     path('product/<int:pk>/update/', ProductUpdate, name='product-update'),
+    path('product/<int:pk>/delete/', ProductDelete, name='product-delete'),
     path('product/create/', ProductCreate, name='product-create'),
 
     path('category/', CategoryList, name='category-list'),
