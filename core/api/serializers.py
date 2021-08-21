@@ -13,6 +13,11 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Product
 
+class ProductCreateSerializer(serializers.ModelField):
+    class Meta:
+        exclude = 'added_by_merchant'
+        model = Product
+
 class ProductMediaSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'

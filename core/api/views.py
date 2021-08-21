@@ -8,6 +8,7 @@ import datetime
 from core.models import Category, Product, ProductMedia
 from .serializers import (
                     CategorySerializer,
+                    ProductCreateSerializer,
                     ProductSerializer,
                     ProductMediaSerializer
                     )
@@ -30,22 +31,32 @@ def ProductDetail(request,  pk):
         return Response(serializer.data)
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,))
 def ProductCreate(request):
-    serializer = ProductSerializer(data=request.data)
+    product = Product(added_by_merchant = request.user.merchantuser,
+                        created_at=datetime.datetime.now())
+    serializer = ProductSerializer(product, data=request.data)
+    
+    if request.user.is_merchant == False:
+        return Response({'response':"You are not a merchant"})
+
     if serializer.is_valid():
-        serializer.save(
-                    added_by_merchant = request.user,
-                    created_at=datetime.datetime.now()
-                    )
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
+@permission_classes((IsAuthenticated,))
 def ProductUpdate(request, pk):
     try:
         product = Product.objects.get(pk=pk)
     except Product.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+    owner = request.user
+
+    if owner != product.added_by_merchant.user:
+        return Response({'response':"You are not the owner of this product"})
 
     if request.method == 'PUT':
         serializer = ProductSerializer(product, data=request.data)
@@ -55,11 +66,19 @@ def ProductUpdate(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
+@permission_classes((IsAuthenticated,))
 def ProductDelete(request, pk):
     try:
         product = Product.objects.get(pk=pk)
     except Product.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+
+    print(product.added_by_merchant.user)
+
+    owner = request.user
+    if owner != product.added_by_merchant.user:
+        return Response({'response':"You are not the owner of this product"})
 
     if request.method == 'DELETE':
         product.delete()
