@@ -9,9 +9,11 @@ from core.models import (Category, Product, ProductMedia,
                             OrderItem,CustomerOrder)
 from .serializers import (
                     CategorySerializer,
+                    CustomerOrderSerializer,
                     ProductCreateSerializer,
                     ProductSerializer,
-                    ProductMediaSerializer
+                    ProductMediaSerializer,
+                    CustomerOrderSerializer,
                     )
 
 @api_view(['GET'])
@@ -123,5 +125,13 @@ def AddToCart(request, pk):
         messages.info(request, "Item has been added")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def CartListView(request):
+    try:
+        customer_order = CustomerOrder.objects.get(user=request.user)
+    except CustomerOrder.DoesNotExist:
+        return Response({'response':'You do not have any item in Your cart'})
 
-                        
+    serializer = CustomerOrderSerializer(customer_order)
+    return Response(serializer.data)
