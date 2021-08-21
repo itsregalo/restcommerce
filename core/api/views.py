@@ -35,7 +35,10 @@ def ProductDetail(request,  pk):
 def ProductCreate(request):
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(created_at=datetime.datetime.now())
+        serializer.save(
+                    added_by_merchant = request.user,
+                    created_at=datetime.datetime.now()
+                    )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
