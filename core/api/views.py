@@ -1,6 +1,8 @@
+from datetime import datetime
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+import datetime
 
 from core.models import Category, Product, ProductMedia
 from .serializers import (
@@ -16,7 +18,7 @@ def ProductList(request):
     return Response(serializer.data)
 
 @api_view(['GET', 'DELETE'])
-def ProductDetail(request, slug, pk):
+def ProductDetail(request,  pk):
     try:
         product = Product.objects.get(pk=pk)
     except Product.DoesNotExist:
@@ -33,12 +35,12 @@ def ProductDetail(request, slug, pk):
 def ProductCreate(request):
     serializer = ProductSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        serializer.save(created_at=datetime.datetime.now())
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-def ProductUpdate(request, slug,pk):
+def ProductUpdate(request, pk):
     try:
         product = Product.objects.get(pk=pk)
     except Product.DoesNotExist:
