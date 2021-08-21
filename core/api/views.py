@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 import datetime
 
-from core.models import Category, Product, ProductMedia
+from core.models import (Category, Product, ProductMedia, 
+                            OrderItem,CustomerOrder)
 from .serializers import (
                     CategorySerializer,
                     ProductCreateSerializer,
@@ -33,13 +34,12 @@ def ProductDetail(request,  pk):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def ProductCreate(request):
-    product = Product(added_by_merchant = request.user.merchantuser,
-                        created_at=datetime.datetime.now())
-    serializer = ProductSerializer(product, data=request.data)
     
     if request.user.is_merchant == False:
         return Response({'response':"You are not a merchant"})
 
+    product = Product(added_by_merchant = request.user.merchantuser)
+    serializer = ProductSerializer(product, data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -96,6 +96,32 @@ def CategoryList(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def AddToCart(request, pk):
+    product = Product.objects.get(pk=pk)
+
+    order_item, created = OrderItem.objects.get_or_create(user=request.user,
+                                                          product=product,
+                                                          is_ordered=False)
+    order_qs = CustomerOrder.objects.filter(user=request.user, is_ordered=False)
+    if order_qs.exists():
+        order = order_qs[0]
+        if order.products.filter(product__slug=product.slug).exists():
+            order_item.quantity += 1
+            order_item.save()
+            messages.info(request, "Item quantity has been updated")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        else:
+            order.products.add(order_item)
+            messages.info(request, "product has been added to the cart")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+    else:
+        order = CustomerOrder.objects.create(user=request.user)
+        order.products.add(order_item)
+        messages.info(request, "Item has been added")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
                         

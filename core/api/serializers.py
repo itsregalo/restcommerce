@@ -1,6 +1,7 @@
 from django.db.models import fields
 from rest_framework import serializers
-from core.models import (Product, Category, ProductMedia)
+from core.models import (Product, Category, ProductMedia,
+                            OrderItem, CustomerOrder)
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -23,3 +24,14 @@ class ProductMediaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
         model = ProductMedia
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = OrderItem
+
+class CustomerOrderItem(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = CustomerOrder
