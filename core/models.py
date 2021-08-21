@@ -58,7 +58,7 @@ class Product(models.Model):
     product_long_description=RichTextField(blank=True, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     tags = TaggableManager()
-    added_by_merchant=models.ForeignKey(User,on_delete=models.CASCADE)
+    added_by= models.ForeignKey(User,on_delete=models.CASCADE)
     in_stock_total=models.IntegerField(default=1)
     is_approved = models.BooleanField(default=False)
     view_count = models.IntegerField(default=0)

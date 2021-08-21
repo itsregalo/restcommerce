@@ -40,7 +40,7 @@ def ProductCreate(request):
     if request.user.is_merchant == False:
         return Response({'response':"You are not a merchant"})
 
-    product = Product(added_by_merchant = request.user.merchantuser)
+    product = Product(added_by = request.user)
     serializer = ProductSerializer(product, data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -57,7 +57,7 @@ def ProductUpdate(request, pk):
 
     owner = request.user
 
-    if owner != product.added_by_merchant.user:
+    if owner != product.added_by.user:
         return Response({'response':"You are not the owner of this product"})
 
     if request.method == 'PUT':
@@ -124,6 +124,8 @@ def AddToCart(request, pk):
         order.products.add(order_item)
         messages.info(request, "Item has been added")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
