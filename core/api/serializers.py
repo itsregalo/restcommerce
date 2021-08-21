@@ -16,7 +16,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductCreateSerializer(serializers.ModelField):
     class Meta:
-        exclude = 'added_by'
+        fields = '__all__'
         model = Product
 
 class ProductMediaSerializer(serializers.ModelSerializer):
