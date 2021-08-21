@@ -16,7 +16,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
 
     def save(self):
-        user = User.objects.create(
+        user = User(
             email = self.validated_data['email'],
             username = self.validated_data['username'],
         )
