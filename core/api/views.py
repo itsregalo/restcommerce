@@ -104,8 +104,8 @@ def CategoryList(request):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated))
-def AddToCart(request, pk):
-    product = Product.objects.get(pk=pk)
+def AddToCart(request, slug):
+    product = Product.objects.get(slug=slug)
 
     order_item, created = OrderItem.objects.get_or_create(user=request.user,
                                                           product=product,
@@ -163,3 +163,8 @@ def CartListView(request):
 
     serializer = CartSerializer(customer_order)
     return Response(serializer.data)
+
+@api_view(['GET'])
+def CategoryList(request, slug, pk):
+    category = get_object_or_404(Category, pk=pk)
+    products = Product.objects.filter(category=)
