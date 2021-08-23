@@ -103,13 +103,13 @@ def CategoryList(request):
 
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated))
+@permission_classes((IsAuthenticated,))
 def AddToCart(request, slug):
     product = Product.objects.get(slug=slug)
 
-    order_item, created = OrderItem.objects.get_or_create(user=request.user,
-                                                          product=product,
-                                                          is_ordered=False)
+    order_item = OrderItem.objects.get_or_create(user=request.user,
+                                                product=product,
+                                                is_ordered=False)
     order_qs = CustomerOrder.objects.filter(user=request.user, is_ordered=False)
     data = {}
     if order_qs.exists():
