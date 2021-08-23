@@ -9,11 +9,12 @@ from core.models import (Category, Product, ProductMedia,
                             OrderItem,CustomerOrder)
 from .serializers import (
                     CategorySerializer,
-                    CustomerOrderSerializer,
+                    CartSerializer,
+                    OrderItemSerializer,
                     ProductCreateSerializer,
                     ProductSerializer,
                     ProductMediaSerializer,
-                    CustomerOrderSerializer,
+                    
                     )
 
 @api_view(['GET'])
@@ -108,22 +109,25 @@ def AddToCart(request, pk):
                                                           product=product,
                                                           is_ordered=False)
     order_qs = CustomerOrder.objects.filter(user=request.user, is_ordered=False)
+    data = {}
     if order_qs.exists():
         order = order_qs[0]
         if order.products.filter(product__slug=product.slug).exists():
             order_item.quantity += 1
             order_item.save()
-            messages.info(request, "Item quantity has been updated")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        else:
-            order.products.add(order_item)
-            messages.info(request, "product has been added to the cart")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    else:
-        order = CustomerOrder.objects.create(user=request.user)
+            serializer = OrderItemSerializer(order_item)
+            data['success'] = "Item was added to cart"
+            data['item'] = serializer.data
+            return Response(data, status=status.HTTP_201_CREATED)
         order.products.add(order_item)
-        messages.info(request, "Item has been added")
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        serializer = OrderItemSerializer(order_item)
+        data['success'] = "Item was added to cart"
+        data['item'] = serializer.data
+        return Response(data, status=status.HTTP_201_CREATED)
+    serializer = OrderItemSerializer(order_item)
+    data['success'] = "Item was added to cart"
+    data['item'] = serializer.data
+    return Response(data, status=status.HTTP_201_CREATED)
 
 
 
@@ -135,5 +139,5 @@ def CartListView(request):
     except CustomerOrder.DoesNotExist:
         return Response({'response':'You do not have any item in Your cart'})
 
-    serializer = CustomerOrderSerializer(customer_order)
+    serializer = CartSerializer(customer_order)
     return Response(serializer.data)
