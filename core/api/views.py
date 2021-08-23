@@ -122,11 +122,13 @@ def AddToCart(request, slug):
         order.products.add(order_item)
         data['success'] = "Item was added to cart"
         return Response(data, status=status.HTTP_201_CREATED)
+    order_qs = CustomerOrder.objects.create(user=request.user, is_ordered=False)
+    order_qs.products.add(order_item)
     data['success'] = "Item was added to cart"
     return Response(data, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated))
+@permission_classes((IsAuthenticated,))
 def RemoveFromCart(request, slug, *args, **kwargs):
     product = get_object_or_404(Product, slug=slug)
     order_qs = CustomerOrder.objects.filter(user=request.user)
