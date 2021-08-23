@@ -13,7 +13,7 @@ urlpatterns = [
     path('product/add-to-cart/<slug:slug>/', AddToCart, name='add-to-cart'),
     path('product/remove-from-cart/<slug:slug>/', RemoveFromCart, name='remove-from-cart'),
     path('products/categories/<slug:slug>/', CategoryList, name='category-list'),
-
+    path('product/my-cart/', CartListView, name='cart-list'),
     path('category/', CategoryList, name='category-list'),
     ]
 
