@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -102,6 +103,7 @@ def CategoryList(request):
 
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated))
 def AddToCart(request, pk):
     product = Product.objects.get(pk=pk)
 
@@ -126,10 +128,30 @@ def AddToCart(request, pk):
         return Response(data, status=status.HTTP_201_CREATED)
     serializer = OrderItemSerializer(order_item)
     data['success'] = "Item was added to cart"
-    data['item'] = serializer.data
+    data['product'] = serializer.data
     return Response(data, status=status.HTTP_201_CREATED)
 
-
+@api_view(['POST'])
+@permission_classes((IsAuthenticated))
+def RemoveFromCart(request, slug, *args, **kwargs):
+    product = get_object_or_404(Product, slug=slug)
+    order_qs = CustomerOrder.objects.filter(user=request.user)
+    data = {}
+    if order_qs.exists():
+        order = order_qs[0]
+        if order.products.filter(product__slug=product.slug).exists():
+            order_item = OrderItem.objects.filter(user=request.user,
+                                                  product=product,
+                                                  is_ordered=False)[0]
+            order.products.remove(order_item)
+            serializer = OrderItemSerializer(product)
+            data['success'] = 'Item removed from cart'
+            data['product'] = serializer.data
+            return Response(data, status=status.HTTP_201_CREATED)
+        data['failure'] = 'Item not cart'
+        return Response(data, status=status.HTTP_204_NO_CONTENT)
+    data['failure'] = 'You do not have an active order'
+    return Response(data, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
