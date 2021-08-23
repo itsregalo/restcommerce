@@ -149,11 +149,13 @@ def RemoveFromCart(request, slug, *args, **kwargs):
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
-def CartListView(request, user):
-    customer_order = CustomerOrder.objects.get(user=request.user)
+def CartListView(request):
+    try:
+        customer_order = CustomerOrder.objects.get(user=request.user)
+    except CustomerOrder.DoesNotExist:
+        return Response({'response':'You do not have any item in Your cart'})
 
-
-    items = customer_order.products.all
+    items = customer_order.products.all()
     serializer = OrderItemSerializer(items, many=True)
     return Response(serializer.data)
 
