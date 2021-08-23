@@ -161,10 +161,16 @@ def CartListView(request):
     except CustomerOrder.DoesNotExist:
         return Response({'response':'You do not have any item in Your cart'})
 
-    serializer = CartSerializer(customer_order)
+    serializer = CartSerializer(customer_order, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-def CategoryList(request, slug, pk):
-    category = get_object_or_404(Category, pk=pk)
-    products = Product.objects.filter(category=)
+def CategoryList(request, slug):
+    try:
+        category = get_object_or_404(Category, slug=slug)
+    except Category.DoesNotExist:
+        return Response({'response':'You do not have any category yet'})
+    products = Product.objects.filter(category=category)
+
+    serializer = ProductSerializer(products, many=True)
+    return Response(serializer.data)
