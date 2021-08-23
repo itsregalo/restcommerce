@@ -122,8 +122,8 @@ def AddToCart(request, slug):
         order.products.add(order_item)
         data['success'] = "Item was added to cart"
         return Response(data, status=status.HTTP_201_CREATED)
-    order_qs = CustomerOrder.objects.create(user=request.user, is_ordered=False)
-    order_qs.products.add(order_item)
+    order = CustomerOrder.objects.create(user=request.user, is_ordered=False)
+    order.products.add(order_item)
     data['success'] = "Item was added to cart"
     return Response(data, status=status.HTTP_201_CREATED)
 
