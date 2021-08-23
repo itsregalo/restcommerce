@@ -14,7 +14,8 @@ urlpatterns = [
     path('product/remove-from-cart/<slug:slug>/', RemoveFromCart, name='remove-from-cart'),
     path('products/categories/<slug:slug>/', CategoryList, name='category-list'),
     path('product/my-cart/', CartListView, name='cart-list'),
-    path('category/', CategoryList, name='category-list'),
+
+    path('product/category/', CategoryList, name='category-list'),
     ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
