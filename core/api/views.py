@@ -117,18 +117,12 @@ def AddToCart(request, slug):
         if order.products.filter(product__slug=product.slug).exists():
             order_item.quantity += 1
             order_item.save()
-            serializer = OrderItemSerializer(order_item)
             data['success'] = "Item was added to cart"
-            data['item'] = serializer.data
             return Response(data, status=status.HTTP_201_CREATED)
         order.products.add(order_item)
-        serializer = OrderItemSerializer(order_item)
         data['success'] = "Item was added to cart"
-        data['item'] = serializer.data
         return Response(data, status=status.HTTP_201_CREATED)
-    serializer = OrderItemSerializer(order_item)
     data['success'] = "Item was added to cart"
-    data['product'] = serializer.data
     return Response(data, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
@@ -144,9 +138,7 @@ def RemoveFromCart(request, slug, *args, **kwargs):
                                                   product=product,
                                                   is_ordered=False)[0]
             order.products.remove(order_item)
-            serializer = OrderItemSerializer(product)
             data['success'] = 'Item removed from cart'
-            data['product'] = serializer.data
             return Response(data, status=status.HTTP_201_CREATED)
         data['failure'] = 'Item not cart'
         return Response(data, status=status.HTTP_204_NO_CONTENT)
