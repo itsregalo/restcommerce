@@ -105,11 +105,10 @@ def CategoryList(request):
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
 def AddToCart(request, slug):
-    product = Product.objects.get(slug=slug)
-
-    order_item = OrderItem.objects.get_or_create(user=request.user,
-                                                product=product,
-                                                is_ordered=False)
+    product = get_object_or_404(Product, slug=slug)
+    order_item, created = OrderItem.objects.get_or_create(user=request.user,
+                                                          product=product,
+                                                          is_ordered=False)
     order_qs = CustomerOrder.objects.filter(user=request.user, is_ordered=False)
     data = {}
     if order_qs.exists():
@@ -117,15 +116,17 @@ def AddToCart(request, slug):
         if order.products.filter(product__slug=product.slug).exists():
             order_item.quantity += 1
             order_item.save()
-            data['success'] = "Item was added to cart"
+            data['success'] = "Item quantity increased"
             return Response(data, status=status.HTTP_201_CREATED)
+        else:
+            order.products.add(order_item)
+            data['success'] = "Item was added successfully"
+            return Response(data, status=status.HTTP_201_CREATED)
+    else:
+        order = CustomerOrder.objects.create(user=request.user)
         order.products.add(order_item)
-        data['success'] = "Item was added to cart"
+        data['success'] = "Item was added successfully"
         return Response(data, status=status.HTTP_201_CREATED)
-    order = CustomerOrder.objects.create(user=request.user, is_ordered=False)
-    order.products.add(order_item)
-    data['success'] = "Item was added to cart"
-    return Response(data, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,))
